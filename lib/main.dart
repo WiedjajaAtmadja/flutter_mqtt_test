@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'textfield_button.dart';
+import 'leds_switch.dart';
 
 void main() {
   runApp(const MainApp());
@@ -15,6 +17,8 @@ class _MainAppState extends State<MainApp> {
   final textMsgToSend = TextEditingController()..text = 'Hello World';
   final textMQTTBroker = TextEditingController()..text = 'broker.emqx.io';
   var fLedRed = false;
+  var fLedGreen = false;
+  var fLedBlue = false;
   List listMessages = [
     'Message 1',
     'Message 2',
@@ -23,6 +27,27 @@ class _MainAppState extends State<MainApp> {
 
   void mqttSend() {
     debugPrint('Publish: ${textMsgToSend.text}');
+  }
+
+  void onLedRedChanged(bool value) {
+    setState(() {
+      fLedRed = value;
+    });
+    debugPrint('onLedRedChanged: $fLedRed');
+  }
+
+  void onLedGreenChanged(bool value) {
+    setState(() {
+      fLedGreen = value;
+    });
+    debugPrint('onLedGreenChanged: $fLedGreen');
+  }
+
+  void onLedBlueChanged(bool value) {
+    setState(() {
+      fLedBlue = value;
+    });
+    debugPrint('onLedBlueChanged: $fLedBlue');
   }
 
   @override
@@ -35,50 +60,41 @@ class _MainAppState extends State<MainApp> {
           alignment: Alignment.center,
           child: Column(
             children: [
-              Row(children: [
-                SizedBox(
-                    width: 280,
-                    child: TextField(
-                        controller: textMQTTBroker,
-                        decoration: const InputDecoration(
-                          hintText: 'MQTT Broker',
-                          border: OutlineInputBorder(),
-                        ))),
-                TextButton(
-                    onPressed: () {
-                      debugPrint('Connect to ${textMQTTBroker.text}');
-                    },
-                    child: const Text("Connect"))
-              ]),
-              const SizedBox(height: 10),
-              Row(children: [
-                SizedBox(
-                    width: 280,
-                    child: TextField(
-                        controller: textMsgToSend,
-                        decoration: const InputDecoration(
-                          hintText: 'Message',
-                          border: OutlineInputBorder(),
-                        ))),
-                TextButton(
-                    onPressed: () {
-                      debugPrint('publish to ${textMsgToSend.text}');
-                    },
-                    child: const Text("Publish"))
-              ]),
-              Row(children: [
-                const Text("Led Red"),
-                Switch(
-                  value: fLedRed,
-                  activeColor: Colors.red,
-                  onChanged: (value) {
-                    setState(() {
-                      fLedRed = value;
-                    });
-                    debugPrint('Led Red: $value');
+              TextFieldButton(
+                  textController: textMQTTBroker,
+                  onPressed: () {
+                    debugPrint('Connect to ${textMQTTBroker.text}');
                   },
-                ),
-              ]),
+                  hintText: 'MQTT Broker',
+                  textButton: 'Connect'),
+              const SizedBox(height: 10),
+              TextFieldButton(
+                  textController: textMsgToSend,
+                  onPressed: () {
+                    debugPrint('Send to ${textMsgToSend.text}');
+                  },
+                  hintText: 'MQTT Message',
+                  textButton: 'Publish'),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  LedSwitch(
+                      text: 'Red',
+                      value: fLedRed,
+                      color: Colors.red,
+                      onChanged: onLedRedChanged),
+                  LedSwitch(
+                      text: 'Green',
+                      value: fLedGreen,
+                      color: Colors.green,
+                      onChanged: onLedGreenChanged),
+                  LedSwitch(
+                      text: 'Blue',
+                      value: fLedBlue,
+                      color: Colors.blue,
+                      onChanged: onLedBlueChanged),
+                ],
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
